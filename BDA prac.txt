@@ -1,0 +1,516 @@
+BDA prac
+
+prac 1
+Aim: Install, configure and run Hadoop and HDFS and explore HDFS.
+Step 1: Download Java from oracle website
+Search for java SE development kit 8 download https://www.oracle.com/java/technologies/downloads/#java8-windows
+  
+Oracle registration
+Provide your email address and password if already registered, else register.
+Jdk is downloaded
+Step 2: Download Hadoop for the local system
+https://hadoop.apache.org/releases.html
+ 
+Hadoop downloaded
+Move files to c drive
+ 
+Step 3: Install Java
+ 
+Paste it here.
+ 
+Now java will be available at:
+C:\Java 
+Step 4: Setting environment variables for java
+Windows->settings->system->environment variables for system->edit the system environment variables
+  
+Set java home and path for java
+Set user variables
+ 
+Set system variables
+System variable->path->edit->new
+  
+Click Ok-> OK->close
+Java successfully installed
+Step 5: Java version checking
+Go to command prompt
+ 
+Check java version
+ 
+Step 6: Install Hadoop now to our local system
+Unzip Hadoop setup file
+ 
+Rename Hadoop-3.1.3 folder as hadoop
+ 
+Step 7: Configuration of Hadoop  hadoop->etc-> hadoop
+ 
+Important files:
+Core-site.xml
+Hdfs-site.xml
+Mapred-site.xml
+Yarn-site.xml
+Hadoop-env windows command prompt file
+Open all these files in notepad
+
+Create data directory and subdirectories in hadoop
+ 
+Set home and path for Hadoop
+  
+Other configuration files
+ 
+Copy bin folder from HadoopConfiguration-Fixbin folder and replace hadoop\bin folder with this
+ 
+Step 8: Verification of Hadoop installation
+Go to command prompt.
+Type:
+hdfs namenode -format
+set of files pop up on the terminal.
+That means successful installation of Hadoop.
+Namenode is successfully started.
+Open new terminal and start all Hadoop daemons
+Go to Hadoop location.
+C:\hadoop\sbin
+ 
+Type the command
+start-all.cmd
+ 
+All the nodes will start successfully.
+Also try the following command to start yarn daemons.
+start-yarn.cmd
+
+prac 2
+Aim: Implement an application that stores big data in Hbase / MongoDB and manipulate it using R / Python.
+
+Steps of the installation:
+Step 1: Download MongoDB
+Go to official website: MongoDB Community server
+https://www.mongodb.com/try/download/community
+ 
+Click on download
+Step 2: Install MongoDB
+It will download msi file. Click on it and Start the installation.
+ 
+Click on complete option
+Keep all these setting as it is. Click on next.
+Click on next
+Click on install
+ 
+Step 3: Verify MongoDB Installation First we will create C:\data\db directory
+ 
+Now go to
+C:\Program Files\MongoDB\Server\7.0\bin
+Start command prompt from this location
+ 
+To start mongo db server
+Enter mongod command
+ 
+ 
+Mongo daemon is started now
+To open the mongo shell
+Go to 
+C:\Program Files\MongoDB\Server\5.0\bin
+Start command prompt from this location
+Fire the command: mongo
+ 
+ 
+Mongo shell is started
+To see all the default databases:
+>show dbs
+ 
+To create new database named my_database:
+ 
+To create collection in the database:
+And insert json values into it:
+ 
+To see entered collection:
+ 
+To see all the documents in the collection:
+ 
+To set path of MongoDB server and shell
+Copy in clipboard: C:\Program Files\MongoDB\Server\5.0\bin
+Go to environment variables
+Add mongodb path to system path variable
+ 
+Click on New
+ 
+Paste the path
+Click on ok..ok
+Run mongod and mongo command from command prompt once again from anywhere, it will 
+start mongo server and mongo shell
+ 
+To get the effect of running mongod as service, Restart your windows operating system.
+Restarted the machine
+To check mongod service is running automatically:
+Open command prompt
+Give mongo command without running mongod command in another terminal.
+It will start mongod server.
+ 
+Step 4: Install MongoDB Python on Windows
+We will be performing a few key basic operations on a MongoDB database in Python using 
+the PyMongo library.
+Install package to use MongoDB To install this package run the command !pip install pymongo on Jupyter Notebook
+ 
+Step 5: Verify MongoDB Python Connection
+To retrieve the data from a MongoDB database, we will first connect to it. Write and execute 
+the below code in your spider anaconda
+import pymongo 
+mongo_uri = "mongodb://localhost:27017/" 
+client = pymongo.MongoClient(mongo_uri)
+Let’s see the available databases:
+print(client.list_database_names())
+We will use the my_database database for our purpose. Let’s set the cursor to the same 
+database:
+db = client.my_database
+connect to analysis database 
+The list_collection_names command shows the names of all the available collections:
+print(db.list_collection_names())
+Let’s see the number of books we have. We will connect to the customers collection and then 
+print the number of documents available in that collection:
+table=db.books
+print(table.count_documents({}) ) #gives the number of documents in the table
+
+Code:
+import pymongo
+mongo_uri = "mongodb://localhost:27017/"
+client = pymongo.MongoClient(mongo_uri)
+print(client.list_database_names())
+db = client.my_database
+print(db.list_collection_names())
+table=db.books 
+print(table.count_documents({}))
+print(“Bhavik”)
+
+prac 3
+AIM: Implement Regression Model to import a data from web storage. Name the dataset and now do Logistic Regression to find out relation between variables. Also check if the model is fit or not.
+Code:
+#Linear Regression
+import matplotlib.pyplot as plt 
+import pandas as pd
+import numpy as np
+from sklearn import datasets, linear_model
+from sklearn.metrics import mean_squared_error, r2_score # Load the dataset
+diabetes = datasets.load_diabetes() # Load the diabetes dataset
+diabetes_X, diabetes_y = datasets.load_diabetes(return_X_y=True) # Description of the dataset
+print(diabetes['DESCR']) 
+print(diabetes.feature_names)
+
+# Use only one feature
+diabetes_X = diabetes_X[:, np.newaxis, 2]
+#Split the data into training/testing sets 
+diabetes_X_train = diabetes_X[:-30] 
+diabetes_X_test = diabetes_X[-30:]
+# Split the targets into training/testing sets 
+diabetes_y_train = diabetes_y[:-30] 
+diabetes_y_test = diabetes_y[-30:]
+# Create linear regression object
+regr = linear_model.LinearRegression()
+# Train the model using the training sets
+regr.fit(diabetes_X_train, diabetes_y_train)
+# Make predictions using the testing set
+diabetes_y_pred = regr.predict(diabetes_X_test)
+
+# The coefficients print("Coefficients: \n", regr.coef_)
+
+# The mean squared error
+print("Mean squared error: %.2f" % mean_squared_error(diabetes_y_test, diabetes_y_pred))
+# The coefficient of determination: 1 is perfect prediction print("Coefficient of determination: %.2f" % r2_score(diabetes_y_test, diabetes_y_pred))
+# Plot outputs
+plt.scatter(diabetes_X_test, diabetes_y_test, color="purple")
+plt.plot(diabetes_X_test, diabetes_y_pred, color="green", linewidth=3) 
+plt.xticks(())
+plt.yticks(()) 
+plt.title('Linear Regression') 
+plt.xlabel('BMI')
+plt.ylabel('Disease Progression')
+plt.show()
+
+prac 4
+Aim: Apply Multiple Regression on a dataset having a continuous independent variable. 
+Code:
+import matplotlib.pyplot as plt 
+import pandas as pd
+import numpy as np
+from sklearn import datasets, linear_model
+from sklearn.metrics import mean_squared_error, r2_score
+
+diabetes = datasets.load_diabetes()
+diabetes_X, diabetes_y = datasets.load_diabetes(return_X_y=True)
+print(diabetes['DESCR'])
+print(diabetes.feature_names)
+
+diabetes_X = diabetes_X[:, np.newaxis, 0]
+diabetes_X_train = diabetes_X[:-30]
+diabetes_X_test = diabetes_X[-30:]
+diabetes_y_train = diabetes_y[:-30]
+diabetes_y_test = diabetes_y[-30:]
+
+regr = linear_model.LinearRegression()
+regr.fit(diabetes_X_train, diabetes_y_train)
+diabetes_y_pred = regr.predict(diabetes_X_test)
+print("Coefficients: \n", regr.coef_)
+print("Mean squared error: %.2f" % mean_squared_error(diabetes_y_test, diabetes_y_pred))
+print("Coefficient of determination: %.2f" % r2_score(diabetes_y_test, diabetes_y_pred))
+
+plt.scatter(diabetes_X_test, diabetes_y_test, color="blue")
+plt.plot(diabetes_X_test, diabetes_y_pred, color="blue", linewidth=2, label='Age')
+plt.xticks(())
+plt.yticks(())
+plt.title('Multiple Regression')
+plt.ylabel('Disease Progression')
+
+diabetes_X, diabetes_y = datasets.load_diabetes(return_X_y=True)
+print(diabetes.feature_names)
+
+diabetes_X = diabetes_X[:, np.newaxis, 3]
+diabetes_X_train = diabetes_X[:-30]
+diabetes_X_test = diabetes_X[-30:]
+diabetes_y_train = diabetes_y[:-30]
+diabetes_y_test = diabetes_y[-30:]
+
+regr = linear_model.LinearRegression()
+regr.fit(diabetes_X_train, diabetes_y_train)
+diabetes_y_pred = regr.predict(diabetes_X_test)
+print("Coefficients: \n", regr.coef_)
+print("Mean squared error: %.2f" % mean_squared_error(diabetes_y_test, diabetes_y_pred))
+print("Coefficient of determination: %.2f" % r2_score(diabetes_y_test, diabetes_y_pred))
+
+plt.scatter(diabetes_X_test, diabetes_y_test, color="red")
+plt.plot(diabetes_X_test, diabetes_y_pred, color="red", linewidth=2, label='BP')
+plt.xticks(())
+plt.yticks(())
+plt.title('Multiple Regression')
+plt.ylabel('Disease Progression')
+
+diabetes_X, diabetes_y = datasets.load_diabetes(return_X_y=True)
+print(diabetes.feature_names)
+
+diabetes_X = diabetes_X[:, np.newaxis, 2]
+diabetes_X_train = diabetes_X[:-30]
+diabetes_X_test = diabetes_X[-30:]
+diabetes_y_train = diabetes_y[:-30]
+diabetes_y_test = diabetes_y[-30:]
+
+regr = linear_model.LinearRegression()
+regr.fit(diabetes_X_train, diabetes_y_train)
+diabetes_y_pred = regr.predict(diabetes_X_test)
+print("Coefficients: \n", regr.coef_)
+print("Mean squared error: %.2f" % mean_squared_error(diabetes_y_test, diabetes_y_pred))
+print("Coefficient of determination: %.2f" % r2_score(diabetes_y_test, diabetes_y_pred))
+
+plt.scatter(diabetes_X_test, diabetes_y_test, color="magenta")
+plt.plot(diabetes_X_test, diabetes_y_pred, color="magenta", linewidth=2, label='BMI')
+plt.xticks(())
+plt.yticks(())
+plt.title('Multiple Regression')
+plt.ylabel('Disease Progression')
+plt.legend()
+plt.show()
+
+prac 5
+Aim: Build a Classification Model
+Code:
+import pandas as pd
+col_names = ['pregnant','glucose','bp','skin','insulin','bmi','pedigree','age','label']
+# Load Dataset
+pima = pd.read_csv('diabetes.csv', header=None, names=col_names)
+pima.head()
+
+# Split dataset in features and target variable
+feature_cols = ['pregnant','insulin','bmi','age','glucose','bp','pedigree']
+X = pima[feature_cols]  # Features
+Y = pima.label  # Target variable
+# Split X and Y into training and testing sets
+from sklearn.model_selection import train_test_split
+X_train, X_test, Y_train, Y_test = train_test_split(X,Y,test_size=0.25,random_state=16)
+# import the class
+from sklearn.linear_model import LogisticRegression
+logreg = LogisticRegression(random_state=16)
+# fit the model with data
+logreg.fit(X_train,Y_train)
+Y_pred = logreg.predict(X_test)
+# import the metrics class
+from sklearn import metrics
+cnf_matrix = metrics.confusion_matrix(Y_test,Y_pred)
+cnf_matri
+ 
+# Visualizing confusion matrix using HeatMap
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+class_names = [0,1]
+fig, ax = plt.subplots()
+tick_marks = np.arange(len(class_names))
+plt.xticks(tick_marks, class_names)
+plt.yticks(tick_marks, class_names)
+# create HeatMap
+sns.heatmap(pd.DataFrame(cnf_matrix), annot=True, cmap='YlGnBu', fmt='g')
+ax.xaxis.set_label_position('top')
+plt.tight_layout()
+plt.title('Confusion Matrix', y=1.1)
+plt.ylabel('Actual Label')
+plt.xlabel('Predicted Label')
+ 
+from sklearn.metrics import classification_report
+target_names = ['Without Diabetes', 'With Diabetes']
+print('Classification Report:-')
+print(classification_report(Y_test,Y_pred,target_names=target_names))
+Output:
+ 
+# ROC Curve
+Y_pred_proba = logreg.predict_proba(X_test)[::,1]
+fpr, tpr, _ = metrics.roc_curve(Y_test, Y_pred_proba)
+auc = metrics.roc_auc_score(Y_test, Y_pred_proba)
+plt.plot(fpr, tpr, label = 'data 1, auc = '+str(auc))
+plt.legend(loc=4)
+plt.show()
+
+prac 6
+Aim: Build a clustering model
+Code:
+1) K-Means Clustering
+# k-means clustering
+from numpy import unique
+from numpy import where
+from sklearn.datasets import make_classification
+from sklearn.cluster import KMeans
+from matplotlib import pyplot
+# define dataset
+X, _ = make_classification(n_samples=1000, n_features=2, n_informative=2, n_redundant=0, n_clusters_per_class=1, random_state=4)
+# define the model
+model = KMeans(n_clusters=2)
+# fit the model
+model.fit(X)
+# assign a cluster to each example
+yhat = model.predict(X)
+# retrieve unique clusters
+clusters = unique(yhat)
+# create scatter plot for samples from each cluster
+for cluster in clusters:
+    # get row indexes for samples with this cluster
+    row_ix = where(yhat == cluster)
+    # create scatter of these samples
+    pyplot.scatter(X[row_ix, 0], X[row_ix, 1])
+# show the plot
+pyplot.show()
+print("K-Means Clustering")
+ 
+2) Agglomerative Clustering 
+Code:
+# Agglomerative clustering
+from numpy import where
+from sklearn.datasets import make_classification
+from sklearn.cluster import AgglomerativeClustering
+from matplotlib import pyplot
+# define dataset
+X, _ = make_classification(n_samples=1000, n_features=2, 
+n_informative=2, n_redundant=0, n_clusters_per_class=1, 
+random_state=4)
+# define the model
+model = AgglomerativeClustering(n_clusters=2)
+# fit model and predict clusters
+yhat = model.fit_predict(X)
+# retrieve unique clusters
+clusters = unique(yhat)
+# create scatter plot for samples from each cluster
+for cluster in clusters:
+    # get row indexes for samples with this cluster
+    row_ix = where(yhat == cluster)
+    # create scatter of these samples
+    pyplot.scatter(X[row_ix, 0], X[row_ix, 1])
+# show the plot
+pyplot.show()
+print('Agglomerative Clustering')
+
+prac 7
+Aim: Implement SVM classification technique
+Code:
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+# Load Dataset
+dataset = pd.read_csv('Social_Network_Ads.csv')
+dataset.head()
+ 
+# Split Dataset into X and Y
+X = dataset.iloc[:, [2,3]].values
+Y = dataset.iloc[:, 4].values
+
+# Split the X and Y dataset into Training set and Testing set
+from sklearn.model_selection import train_test_split
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.25, random_state=0)
+# Perform feature scaling- feature scaling helps us to normalize the data within a particular range
+from sklearn.preprocessing import StandardScaler
+sc = StandardScaler()
+X_train = sc.fit_transform(X_train)
+X_test = sc.transform(X_test)
+# Fit SVM to the training set
+from sklearn.svm import SVC
+classifier = SVC(kernel='rbf', random_state=0)
+classifier.fit(X_train, Y_train)
+# Predict the test set results
+Y_pred = classifier.predict(X_test)
+# Make the confusion matrix
+from sklearn.metrics import confusion_matrix, accuracy_score
+cnf = confusion_matrix(Y_test, Y_pred)
+print('Confusion Matrix:-')
+print(cnf)
+print('Accuracy Score:-')
+accuracy_score(Y_test, Y_pred)
+ 
+# Visualise the test set results
+from matplotlib.colors import ListedColormap
+X_set, Y_set = X_test, Y_test
+X1, X2 = np.meshgrid(np.arange(start=X_set[:,0].min()-1, stop=X_set[:,0].max()+1,step=0.01),
+                    np.arange(start=X_set[:,1].min()-1, stop=X_set[:,1].max()+1,step=0.01))
+plt.contour(X1, X2, classifier.predict(np.array([X1.ravel(),X2.ravel()]).T).reshape(X1.shape), alpha=0.75, cmap=ListedColormap(('red','green')))
+plt.xlim(X1.min(),X1.max())
+plt.ylim(X2.min(),X2.max())
+for i,j in enumerate(np.unique(Y_set)):
+    plt.scatter(X_set[Y_set==j,0], X_set[Y_set==j,1], c=ListedColormap(('red','green'))(i),label=j)
+
+plt.title('SVM (Test Set)')
+plt.xlabel('Age')
+plt.ylabel('Estimated Salary')
+plt.legend()
+plt.show()
+
+prac 8
+Aim: Implement Decision Tree classification technique
+Code:
+import pandas as pd
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
+col_names = ['pregnant', 'glucose', 'bp', 'skin', 'insulin', 'bmi', 'pedigree', 'age', 'label']
+pima = pd.read_csv('diabetes.csv',header=None, names=col_names)
+pima.head()
+ 
+# Split dataset into features and target variable
+feature_cols = ['pregnant', 'insulin', 'bmi', 'age', 'glucose', 'bp', 'pedigree']
+X = pima[feature_cols]
+Y = pima.label
+# Split dataset into training set and testing set
+X_train, X_test, Y_train, Y_test = train_test_split(X,Y,test_size=0.3,random_state=1)
+# 70% training 30% testing
+# Create Decision Tree Classifier Object
+clf = DecisionTreeClassifier()
+# Train Decision Tree Classifier
+clf = clf.fit(X_train,Y_train)
+#Predict the response for test dataset
+Y_pred = clf.predict(X_test)
+# Model Accuracy, how often is the classifier correct?
+print('Accuracy:- ',metrics.accuracy_score(Y_test,Y_pred))
+ 
+# Visualizing Decision Trees
+from sklearn.tree import export_graphviz
+from six import StringIO
+from IPython.display import Image
+import pydotplus
+import os
+os.environ["PATH"] += os.pathsep + r'C:\Users\DELL\anaconda3\Library\bin\graphviz'
+dot_data = StringIO()
+export_graphviz(clf, out_file=dot_data, filled=True, rounded=True, special_characters=True,
+               feature_names=feature_cols, class_names=['0','1'])
+graph = pydotplus.graph_from_dot_data(dot_data.getvalue())
+graph.write_png('diabetes.png')
+Image(graph.create_png())
+
