@@ -554,3 +554,11 @@ for k=1:1:length(com);
  imshow(new);
 end
 end
+
+extra 
+from ultralytics import YOLO
+import cv2
+
+model = YOLO("../Weights/yolov9c.pt")
+results = model("messi cop.png", show=True)
+cv2.waitkey(0)
