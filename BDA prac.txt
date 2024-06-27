@@ -330,7 +330,7 @@ Y_pred = logreg.predict(X_test)
 # import the metrics class
 from sklearn import metrics
 cnf_matrix = metrics.confusion_matrix(Y_test,Y_pred)
-cnf_matri
+
  
 # Visualizing confusion matrix using HeatMap
 import numpy as np
@@ -353,7 +353,7 @@ from sklearn.metrics import classification_report
 target_names = ['Without Diabetes', 'With Diabetes']
 print('Classification Report:-')
 print(classification_report(Y_test,Y_pred,target_names=target_names))
-Output:
+
  
 # ROC Curve
 Y_pred_proba = logreg.predict_proba(X_test)[::,1]
