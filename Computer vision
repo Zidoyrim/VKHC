@@ -1,0 +1,12 @@
+S = list();
+S(1) = imread('C:\Users\admin\Downloads\scilabprac images\1.jpg');
+S(2) = imread('C:\Users\admin\Downloads\scilabprac images\2.jpg');
+S(3) = imread('C:\Users\admin\Downloads\scilabprac images\3.jpg');
+S(4) = imread('C:\Users\admin\Downloads\scilabprac images\4.jpg');
+S(5) = imread('C:\Users\admin\Downloads\scilabprac images\5.jpg');
+S(6) = imread('C:\Users\admin\Downloads\scilabprac images\6.jpg');
+St  = imstitchimage(S);
+imshow(St);
+
+
+#code for scilab prac 1B
