@@ -1,0 +1,277 @@
+Practical 1a
+
+Aim:- Design an Expert system using AIML.
+!pip install python-aiml
+import aiml
+import os
+
+# Initialize the kernel
+kernel = aiml.Kernel()
+
+# Learn from the AIML file (make sure the path is correct)
+aiml_file = "flu.aiml"
+
+if os.path.exists(aiml_file):
+    kernel.learn(aiml_file)
+else:
+    print(f"Error: AIML file '{aiml_file}' not found.")
+    exit()
+
+# Welcome message
+print("Expert System for Identifying Flu Symptoms")
+print("Type 'bye' to exit the conversation.")
+
+# Chat loop
+while True:
+    user_input = input("You: ")
+    
+    # Exit condition
+    if user_input.lower() == "bye":
+        print("System: Goodbye! Stay healthy.")
+        break
+    
+    # Get response from AIML kernel
+    response = kernel.respond(user_input)
+    
+    # Print the system's response
+    if response:
+        print(f"System: {response}")
+    else:
+        print("System: I'm sorry, I don't understand.")
+
+
+Practical 1c
+
+Aim:-Implement Conditional Probability and joint probability using Python.
+
+import pandas as pd 
+
+# Load the penguins dataset
+df = pd.read_csv('penguins.csv') 
+
+# Display data preview
+print("Data Preview:") 
+print(df.head()) 
+
+# Create a pivot table to compute joint probability (species vs island)
+pivot_table = pd.crosstab(df['species'], df['island'], normalize='all') 
+print("\nJoint Probability (Pivot Table):") 
+print(pivot_table)
+
+# Calculate conditional probability (species given island)
+conditional_probability = pivot_table.div(pivot_table.sum(axis=0), axis=1) 
+print("\nConditional Probability of Species given Island:") 
+print(conditional_probability)
+
+# Calculate P(Adelie | Biscoe)
+p_adelie_given_biscoe = conditional_probability.loc['Adelie', 'Biscoe'] 
+print(f"\nP(Adelie | Biscoe) = {p_adelie_given_biscoe:.4f}")
+
+
+
+Practical 2a (Prolog Code)
+
+Aim:- Create a simple rule-based system in Prolog for diagnosing a common illness based on symptoms.
+% Facts: Define symptoms 
+symptom(fever). 
+symptom(cough). 
+symptom(sore_throat). 
+symptom(body_aches). 
+symptom(runny_nose). 
+symptom(headache). 
+symptom(fatigue).
+
+% Facts: Define possible illnesses 
+condition(cold). 
+condition(flu). 
+condition(strep_throat).
+
+% Rules: Diagnosing based on the presence of symptoms 
+diagnose(cold) :- 
+    symptom(runny_nose), 
+    symptom(cough), 
+    symptom(sore_throat), 
+    \+ symptom(fever). % Absence of fever
+
+diagnose(flu) :- 
+    symptom(fever), 
+    symptom(cough), 
+    symptom(body_aches), 
+    symptom(headache), 
+    symptom(fatigue).
+
+diagnose(strep_throat) :- 
+    symptom(sore_throat), 
+    symptom(fever), 
+    \+ symptom(cough). % Absence of cough
+
+% Alternative: Diagnosing based on rule covering all possible symptoms 
+diagnose(unknown) :- 
+    \+ diagnose(cold), 
+    \+ diagnose(flu), 
+    \+ diagnose(strep_throat).
+
+% Assuming the patient has the following symptoms: 
+symptom(fever). 
+symptom(cough). 
+symptom(body_aches). 
+symptom(headache). 
+symptom(fatigue). 
+
+% You can ask Prolog: 
+% ?- diagnose(Condition).
+
+
+
+
+Practical 2b
+
+Aim:- Design a Fuzzy based application using Python.
+import numpy as np 
+import skfuzzy as fuzz 
+from skfuzzy import control as ctrl 
+import matplotlib.pyplot as plt 
+
+# Define Antecedents and Consequent
+traffic_density = ctrl.Antecedent(np.arange(0, 101, 1), 'traffic_density') 
+time_of_day = ctrl.Antecedent(np.arange(0, 25, 1), 'time_of_day') 
+green_light_duration = ctrl.Consequent(np.arange(0, 61, 1), 'green_light_duration') 
+
+# Membership functions for traffic density
+traffic_density['low'] = fuzz.trimf(traffic_density.universe, [0, 0, 50]) 
+traffic_density['medium'] = fuzz.trimf(traffic_density.universe, [30, 50, 70]) 
+traffic_density['high'] = fuzz.trimf(traffic_density.universe, [50, 100, 100]) 
+
+# Membership functions for time of day
+time_of_day['non_peak'] = fuzz.trimf(time_of_day.universe, [0, 0, 12]) 
+time_of_day['peak'] = fuzz.trimf(time_of_day.universe, [10, 24, 24]) 
+
+# Membership functions for green light duration
+green_light_duration['short'] = fuzz.trimf(green_light_duration.universe, [0, 0, 20]) 
+green_light_duration['moderate'] = fuzz.trimf(green_light_duration.universe, [15, 30, 45]) 
+green_light_duration['long'] = fuzz.trimf(green_light_duration.universe, [40, 60, 60]) 
+
+# View the membership functions
+traffic_density.view() 
+time_of_day.view() 
+green_light_duration.view() 
+
+# Define rules
+rule1 = ctrl.Rule(traffic_density['low'] & time_of_day['non_peak'], green_light_duration['short']) 
+rule2 = ctrl.Rule(traffic_density['low'] & time_of_day['peak'], green_light_duration['moderate']) 
+rule3 = ctrl.Rule(traffic_density['medium'] & time_of_day['non_peak'], green_light_duration['moderate']) 
+rule4 = ctrl.Rule(traffic_density['medium'] & time_of_day['peak'], green_light_duration['long']) 
+rule5 = ctrl.Rule(traffic_density['high'] & time_of_day['non_peak'], green_light_duration['long']) 
+rule6 = ctrl.Rule(traffic_density['high'] & time_of_day['peak'], green_light_duration['long']) 
+
+# Control system
+green_light_ctrl = ctrl.ControlSystem([rule1, rule2, rule3, rule4, rule5, rule6]) 
+green_light_sim = ctrl.ControlSystemSimulation(green_light_ctrl) 
+
+# Input values
+green_light_sim.input['traffic_density'] = 75  # High traffic 
+green_light_sim.input['time_of_day'] = 18      # Peak hours 
+
+# Compute the output
+green_light_sim.compute()  
+
+# Output results
+print(f"Recommended Green Light Duration: {green_light_sim.output['green_light_duration']} seconds") 
+green_light_duration.view(sim=green_light_sim) 
+
+# Show the plots
+plt.show()
+
+
+
+
+
+Practical 3a
+
+
+import random
+import string
+
+target_string = "HELLO"
+population_size = 50
+mutation_rate = 0.01
+generations = 200
+
+def fitness(individual):
+    return sum(1 for a, b in zip(individual, target_string) if a == b)
+
+def create_population(size):
+    return [''.join(random.choices(string.ascii_uppercase, k=len(target_string))) for _ in range(size)]
+
+def select_parents(population):
+    tournament = random.sample(population, 5)
+    return max(tournament, key=fitness)
+
+def crossover(parent1, parent2):
+    crossover_point = random.randint(1, len(parent1) - 1)
+    return parent1[:crossover_point] + parent2[crossover_point:]
+
+def mutate(individual):
+    individual = list(individual)
+    for i in range(len(individual)):
+        if random.random() < mutation_rate:
+            individual[i] = random.choice(string.ascii_uppercase)
+    return ''.join(individual)
+
+population = create_population(population_size)
+for generation in range(generations):
+    best_individual = max(population, key=fitness)
+    print(f"Generation {generation}: Best individual: {best_individual}, Fitness: {fitness(best_individual)}")
+
+    if fitness(best_individual) == len(target_string):
+        break
+
+    new_population = []
+    for _ in range(population_size):
+        parent1 = select_parents(population)
+        parent2 = select_parents(population)
+        child = crossover(parent1, parent2)
+        child = mutate(child)
+        new_population.append(child)
+
+    population = new_population
+
+best_individual = max(population, key=fitness)
+print(f"Best individual: {best_individual}, Fitness: {fitness(best_individual)}")
+
+
+
+
+
+Practical 3b
+
+Aim:- Design intelligent agent using any AI algorithm. design expert tutoring system
+class MathTutor: 
+    def __init__(self): 
+        self.operations = { 
+            '+': lambda a, b: a + b, 
+            '-': lambda a, b: a - b, 
+            '*': lambda a, b: a * b, 
+            '': lambda a, b: a/b, 
+        } 
+    def explain_operation(self, operator): 
+        explanation = { 
+            '+': "Addition adds two numbers together.", 
+            '-': "Subtraction subtracts the second number from the first.", 
+            '*': "Multiplication gives the product of two numbers.", 
+            '': "Division divides the first number by the second.", 
+        } 
+        return explanation.get(operator, "Invalid operation.") 
+    def perform_operation(self, operator, a, b): 
+        if operator in self.operations: 
+            return self.operations[operator](a, b)
+        else: 
+            return None 
+if __name__ == "__main__": 
+    tutor = MathTutor() 
+    # Example usage: 
+    operator = '+' 
+    a, b = 10, 5 
+    print(tutor.explain_operation(operator)) 
+    result = tutor.perform_operation(operator, a, b)  
+    print(f"Result of {a} {operator} {b} = {result}")
