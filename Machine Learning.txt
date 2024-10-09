@@ -1,4 +1,4 @@
-Decision tree
+1) Decision tree
 
 import pandas as pd
 import numpy as np
@@ -71,7 +71,7 @@ decoded_prediction = pd.factorize(df['Buys Computer'])[1][sklearn_prediction[0]]
 print("Prediction for sklearn decision tree:", decoded_prediction)
 
 
-KNN
+2) KNN
 Code:-
 # Step 1: Import necessary libraries
 import pandas as pd
@@ -155,7 +155,7 @@ ax.legend()
 plt.show()
 
 
-Naïve Bayes
+3) Naïve Bayes
 Code:-
 import numpy as np
 import matplotlib.pyplot as plt
@@ -226,7 +226,7 @@ plt.show()
 
 
 
-Hierarchical Clustering
+4) Hierarchical Clustering
 
 Code:-
 import pandas as pd
@@ -321,7 +321,7 @@ print("Classification Report:\n", classification_rep)
 plt.show()
 
 
-KMeans Clustering
+5) KMeans Clustering
 Code:-
 import numpy as np
 import pandas as pd
@@ -384,3 +384,495 @@ plt.ylabel('Sepal Width (cm)')
 plt.title('K-Means Clustering with Class Labels on Iris Dataset')
 plt.legend()
 plt.show()
+
+6) Linear Regression
+Code:-
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.datasets import fetch_california_housing
+
+housing = fetch_california_housing()
+X = pd.DataFrame(housing.data, columns = housing.feature_names)
+y = pd.DataFrame(housing.target, columns = ['MEDV'])
+
+plt.figure(figsize=(10,8))
+sns.heatmap(X.corr(), annot=True, cmap='coolwarm')
+plt.title("Correlation Heatmap of California Housing Features")
+plt.show()
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+reg_model = LinearRegression()
+reg_model.fit(X_train, y_train)
+
+y_train_pred = reg_model.predict(X_train)
+y_test_pred = reg_model.predict(X_test)
+
+train_mse = mean_squared_error(y_train, y_train_pred)
+test_mse = mean_squared_error(y_test, y_test_pred)
+train_r2 = r2_score(y_train, y_train_pred)
+test_r2 = r2_score(y_test, y_test_pred)
+
+print(f'Training Mean Squared Error: {train_mse}')
+print(f'Test Mean Squared Error: {test_mse}')
+print(f'Training R^2 Score: {train_r2}')
+print(f'Test R^2 Score: {test_r2}')
+
+coefficients = pd.DataFrame(reg_model.coef_.T, X.columns, columns=['Coefficients'])
+print(coefficients)
+
+plt.figure(figsize=(8,6))
+plt.scatter(y_test, y_test_pred, c='blue')
+plt.plot([y_test.min(), y_test.max()], [y_test.min(), y_test.max()], '--r', lw =3)
+plt.xlabel('Actual Value')
+plt.ylabel('Predicted Value')
+plt.title('Actual VS Predicted Values (Test Set)')
+
+
+7) ANN-Backpropogation
+Code:-
+
+import numpy as np
+import matplotlib.pyplot as plt
+def sigmoid(x):
+    return 1/(1+np.exp(-x))
+
+def sigmoid_derivative(x):
+    return x*(1-x)
+
+class NeuralNetwork:
+    def __init__(self, input_size, hidden_size, output_size):
+        self.weights_input_hidden = np.random.uniform(size=(input_size, hidden_size))
+        self.weights_hidden_output = np.random.uniform(size=(hidden_size, output_size))
+
+
+    def forward(self, X):
+        self.hidden_input = np.dot(X, self.weights_input_hidden)
+        self.hidden_output = sigmoid(self.hidden_input)
+        self.output = sigmoid(np.dot(self.hidden_output, self.weights_hidden_output))
+        return self.output
+
+
+    def backward(self, X, y, learning_rate):
+        error_output = y-self.output
+        delta_output = error_output*sigmoid_derivative(self.output)
+
+        error_hidden = delta_output.dot(self.weights_hidden_output.T)
+        delta_hidden = error_hidden*sigmoid_derivative(self.hidden_output)
+
+        self.weights_hidden_output += self.hidden_output.T.dot(delta_output)*learning_rate
+        self.weights_input_hidden += X.T.dot(delta_hidden)*learning_rate
+
+
+    def train(self, X, y, learning_rate, epochs):
+        self.loss_history = []
+        for _ in range(epochs):
+            output = self.forward(X)
+            error = y-output
+            self.loss_history.append(np.mean(error**2))
+            self.backward(X,y,learning_rate)
+
+    def predict(self, X):
+        return self.forward(X)
+
+
+X = np.array([[0,0],[0,1],[1,0],[1,1]])
+y = np.array([[0], [1], [1], [0]])
+
+input_size = 2
+hidden_size = 4
+output_size = 1
+learning_rate = 0.1
+epochs = 10000
+
+nn = NeuralNetwork(input_size, hidden_size, output_size)
+nn.train(X, y, learning_rate, epochs)
+
+predictions = nn.predict(X)
+
+plt.figure(figsize=(8, 6))
+plt.scatter(X[:,0], X[:,1], c=y, cmap='viridis', label='XOR Data')
+plt.scatter(X[:,0], X[:,1], c=np.round(predictions), cmap='plasma', marker='x', s=200, label='Predictions')
+plt.title('XOR Dataset and Predictions')
+plt.xlabel('Input 1')
+plt.ylabel('Input 2')
+plt.legend()
+
+for i in range(len(X)):
+    print(f"Input: {X[i]}, Actual: {y[i]}, Predicted: {np.round(predictions[i])}")
+plt.show()
+
+
+8) Logistic Regression
+Code:-
+
+import pandas as pd  
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.datasets import load_breast_cancer
+
+cancer_data = load_breast_cancer()
+X = pd.DataFrame(cancer_data.data, columns= cancer_data.feature_names)
+y = pd.DataFrame(cancer_data.target, columns= ['target'])
+
+print('Dataset Head:')
+print(X.head())
+
+print('Target Distribution:')
+print(y['target'].value_counts())
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state = 42)
+
+logreg = LogisticRegression(max_iter=10000, random_state=42)
+logreg.fit(X_train, y_train.values.ravel())
+
+y_pred = logreg.predict(X_test)
+accuracy = accuracy_score(y_test, y_pred)
+conf_matrix = confusion_matrix(y_test, y_pred)
+class_report = classification_report(y_test, y_pred)
+
+print(f'Accuracy: {accuracy}')
+print()
+print('Confusion matrix:')
+print(conf_matrix)
+print()
+print('Classification report:')
+print(class_report)
+
+plt.figure(figsize=(6,4))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
+plt.title('Confusion Matrix')
+plt.xlabel('Predicted Label')
+plt.ylabel('True Label')
+plt.show()
+
+new_input = np.array([X.mean().values])
+print(f'New input for prediction: {new_input}')
+
+new_prediction = logreg.predict(new_input)
+predicted_class = 'benign' if new_prediction == 1 else 'maligant'
+print(f'Predicted class for the new input: {predicted_class}')
+plt.figure(figsize=(6,4))
+sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
+plt.title('Confusion matrix - Test set')
+plt.xlabel('Predicted Label')
+plt.ylabel('True Label')
+plt.show()
+
+
+9) Random Forest
+Code:-
+import numpy as np  
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+import seaborn as sns
+import matplotlib.pyplot as plt
+from sklearn.datasets import load_iris
+
+iris = load_iris()
+X = pd.DataFrame(iris.data, columns=iris.feature_names).iloc[:,:2]
+y = pd.DataFrame(iris.target, columns=['species'])
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+def plot_decision_boundary(clf, X, y, title):
+    x_min, x_max = X.iloc[:,0].min()-1, X.iloc[:,0].max()+1
+    y_min, y_max = X.iloc[:,1].min()-1, X.iloc[:,1].max()+1
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.01),
+                        np.arange(y_min, y_max, 0.01))
+    
+    Z = clf.predict(np.c_[xx.ravel(), yy.ravel()])
+    Z = Z.reshape(xx.shape)
+    plt.contour(xx, yy, Z, alpha=0.4, cmap=plt.cm.RdYlBu)
+    plt.scatter(X.iloc[:,0], X.iloc[:,1], c=y.values.ravel(), s=40, edgecolor='k', cmap=plt.cm.RdYlBu)
+    plt.title(title)
+    plt.xlabel(iris.feature_names[0])
+    plt.ylabel(iris.feature_names[1])
+    plt.show()
+    
+dt_model = DecisionTreeClassifier(random_state=42)
+dt_model.fit(X_train, y_train)
+
+dt_predictions = dt_model.predict(X_test)
+
+dt_accuracy = accuracy_score(y_test, dt_predictions)
+dt_confusion_matrix = confusion_matrix(y_test, dt_predictions)
+
+print(f'Decision Tree Accuracy: {dt_accuracy}')
+print('Decision Tree Classification Report:')
+print(classification_report(y_test, dt_predictions))
+
+sns.heatmap(dt_confusion_matrix, annot=True, fmt='d', cmap='Blues')
+plt.title('DecisionTree Confusion Matrix')
+plt.ylabel('True Label')
+plt.xlabel('Predicted Label')
+plt.show()
+
+plot_decision_boundary(dt_model, X_test, y_test, 'Decision Tree Decision Boundary')
+
+rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
+rf_model.fit(X_train, y_train.values.ravel())
+rf_predictions = rf_model.predict(X_test)
+
+rf_accuracy = accuracy_score(y_test, rf_predictions)
+rf_confusion_matrix = confusion_matrix(y_test, rf_predictions)
+
+print(f'Random Forest Accuracy: {rf_accuracy}')
+print('Random Forest Classification Report:')
+print(classification_report(y_test, rf_predictions))
+
+sns.heatmap(rf_confusion_matrix, annot=True, fmt='d', cmap='Greens')
+plt.title('Random Forest Confusion Matrix')
+plt.ylabel('True Label')
+plt.xlabel('Predicted Label')
+plt.show()
+plot_decision_boundary(rf_model, X_test, y_test, 'Random Forest Decision Boundary')
+
+
+10) Locally Weighted Regression
+Code:-
+import numpy as np
+import matplotlib.pyplot as plt
+
+# Seed for reproducibility
+np.random.seed(0)
+
+# Generate random dataset
+X = np.sort(5 * np.random.rand(80, 1), axis=0)
+y = np.sin(X).ravel()
+y[::5] += 3 * (0.5 - np.random.rand(16))
+
+# Locally Weighted Regression function
+def locally_weighted_regression(query_point, X, y, tau=0.1):
+    m = X.shape[0]
+    # Calculate weights
+    weights = np.exp(-((X - query_point) ** 2).sum(axis=1) / (2 * tau ** 2))
+    W = np.diag(weights)
+    
+    # Add bias term to X
+    X_bias = np.c_[np.ones((m, 1)), X]
+    
+    # Calculate theta using weighted least squares
+    theta = np.linalg.inv(X_bias.T.dot(W).dot(X_bias)).dot(X_bias.T).dot(W).dot(y)
+    
+    # Predict for query_point
+    x_query = np.array([1, query_point])
+    prediction = x_query.dot(theta)
+    return prediction
+
+# Generate test points
+X_test = np.linspace(0, 5, 100)
+
+# Predict using locally weighted regression
+predictions = [locally_weighted_regression(query_point, X, y, tau=0.1) for query_point in X_test]
+
+# Plot results
+plt.scatter(X, y, color='black', s=30, marker='o', label='Data Points')
+plt.plot(X_test, predictions, color='blue', linewidth=2, label='LWR Fit')
+plt.xlabel('X')
+plt.ylabel('y')
+plt.title('Locally Weighted Regression')
+plt.legend()
+plt.show()
+
+
+11) Bayesian Network
+!pip install pgmpy
+!pip install networkx
+!pip install numpy pandas scipy network matplotlib
+Code:-
+import numpy as np
+import pandas as pd
+from pgmpy.models import BayesianNetwork
+from pgmpy.estimators import ParameterEstimator, MaximumLikelihoodEstimator
+from pgmpy.inference import VariableElimination
+import networkx as nx
+import matplotlib.pyplot as plt
+
+data = pd.DataFrame (data={'Age': [30, 40, 50, 60, 70],
+                           'Gender': ['Male', 'Female', 'Male', 'Female', 'Male'],
+                           'ChestPain': ['Typical', 'Atypical', 'Typical', 'Atypical', 'Typical'],
+                           'HeartDisease': ['Yes', 'No', 'Yes', 'No', 'Yes']})
+model = BayesianNetwork([('Age', 'HeartDisease'),
+                         ('Gender', 'HeartDisease'),
+                         ('ChestPain', 'HeartDisease')])
+
+model.fit(data, estimator=MaximumLikelihoodEstimator)
+
+pos = nx.circular_layout(model)
+nx.draw(model, pos, with_labels=True, node_size=5000, node_color="skyblue", font_size=12, font_color="black")
+plt.title("Bayesian Network Structure")
+plt.show()
+
+for cpd in model.get_cpds():
+    print("CPD of", cpd.variable)
+    print(cpd)
+
+inference = VariableElimination(model)
+query = inference.query(variables=['HeartDisease'], evidence={'Age':50, 'Gender': 'Male', 'ChestPain': 'Typical'})
+print(query)
+
+
+12) Perform Data Loading, Feature selection (Principal Component analysis) and Feature Scoring and Ranking
+Code:-
+from sklearn.feature_extraction.text import CountVectorizer 
+from sklearn.naive_bayes import MultinomialNB 
+from sklearn.model_selection import train_test_split 
+from sklearn.metrics import accuracy_score, classification_report 
+ 
+sms_data = [ 
+  "Free entry in 2 a weekly competition to win FA Cup final tickets", 
+  "Hey, I will call you later. Don't forget to bring the document.", 
+  "Congratulations! You've won a free cruise to the Bahamas", 
+  "Hi there, can we meet tomorrow for lunch?", 
+  "URGENT! Your mobile number has won a $2000 prize!",
+  "Reminder: Your appointment with the dentist is at 3 PM today.", 
+  "You have won a lottery! Claim your prize now by calling us.", 
+  "Are we still meeting at the coffee shop today?", 
+  "Exclusive deal just for you! Buy now and get 50% off!", 
+  "Can you send me the report by end of the day?"
+]
+    
+sms_labels = [ 
+    "spam", "ham", "spam", "ham", "spam", 
+    "ham", "spam", "ham", "spam", "ham" 
+] 
+vectorizer = CountVectorizer() 
+X = vectorizer.fit_transform(sms_data) 
+ 
+X_train, X_test, y_train, y_test = train_test_split(X, sms_labels, test_size=0.3, random_state=42) 
+ 
+classifier = MultinomialNB() 
+classifier.fit(X_train, y_train) 
+ 
+y_pred = classifier.predict(X_test) 
+ 
+accuracy = accuracy_score(y_test,y_pred) 
+report = classification_report(y_test, y_pred) 
+ 
+print("Test Data:")
+
+for doc, actual, predicted in zip(sms_data[len(sms_data) - len(y_test):], y_test, y_pred):
+    print(f"Message: {doc}, Actual: {actual}, Predicted: {predicted}")
+
+print(f"\nAccuracy: {accuracy:.2f}") 
+print(report) 
+
+
+13) Distance Metrics
+Code:-
+import numpy as np
+import pandas as pd 
+import matplotlib.pyplot as plt 
+from sklearn.datasets import load_iris 
+from sklearn.model_selection import train_test_split 
+from sklearn.neighbors import KNeighborsClassifier 
+from sklearn.metrics import classification_report,confusion_matrix 
+ 
+# Load the Iris dataset 
+iris = load_iris() 
+X = iris.data[:, :2]  # Select only the first two features (sepal length and sepal width) 
+y = iris.target 
+ 
+# Split the dataset into training and testing sets 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42) 
+# Initialize k-NN classifier with different distance metrics 
+k = 3 
+ 
+# List of distance metrics to test 
+distance_metrics = ['euclidean', 'manhattan', 'chebyshev'] 
+ 
+# Create subplots for each distance metric 
+fig, axes = plt.subplots(1, len(distance_metrics), figsize=(15, 5)) 
+for i, metric in enumerate(distance_metrics): 
+    knn_classifier = KNeighborsClassifier(n_neighbors=k, metric=metric) 
+
+ # Fit the classifier to the training data 
+    knn_classifier.fit(X_train, y_train) 
+    # Make predictions on the test data 
+    y_pred = knn_classifier.predict(X_test) 
+    # Evaluate the classifier's performance 
+    print(f"Distance Metric: {metric}") 
+    print("Confusion Matrix:") 
+    print(confusion_matrix(y_test, y_pred)) 
+    print("\nClassification Report:") 
+    print(classification_report(y_test, y_pred)) 
+    print("\n") 
+ 
+    # Visualize the dataset and decision boundaries for the current metric 
+    ax = axes[i] 
+# Plot the training data points 
+    ax.scatter(X_train[:, 0], X_train[:, 1], c=y_train, cmap='viridis', label='Training Data') 
+ 
+    # Plot the testing data points 
+    ax.scatter(X_test[:, 0], X_test[:, 1], c=y_test, cmap='viridis', marker='x', s=100, label='Testing Data') 
+# Plot decision boundaries using the current metric 
+    knn_classifier = KNeighborsClassifier(n_neighbors=k, metric=metric) 
+    knn_classifier.fit(X, y) 
+    x_min, x_max = X[:, 0].min() - 1, X[:, 0].max() + 1 
+    y_min, y_max = X[:, 1].min() - 1, X[:, 1].max() + 1 
+    xx, yy = np.meshgrid(np.arange(x_min, x_max, 0.01), np.arange(y_min, y_max, 0.01))
+    Z = knn_classifier.predict(np.c_[xx.ravel(), yy.ravel()]) 
+    Z = Z.reshape(xx.shape) 
+    ax.contourf(xx, yy, Z, cmap='viridis', alpha=0.5, levels=range(4)) 
+    ax.set_title(f'K-NN ({metric.capitalize()} Metric)') 
+    ax.set_xlabel('Sepal Length (cm)') 
+    ax.set_ylabel('Sepal Width (cm)') 
+    ax.legend() 
+ 
+plt.show()
+
+
+14) Rule Based Methods
+Code:-
+import numpy as np 
+from sklearn.datasets import load_iris 
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report 
+ 
+#Load the Iris dataset 
+iris = load_iris() 
+X = iris.data 
+y = iris.target 
+ 
+#Split the data for testing 
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42) 
+ 
+#Define a simple rule-based classifier function 
+def rule_based_classifier(x): 
+    if x[2] < 2.0: 
+        rule = "If feature 2 < 2.0, assign to Classd 0" 
+        return 0 # Class 0 
+    elif x[3] > 1.5: 
+        rule = "If feature 2 >= 2.0 and feature 3 > 1.5, assign to Class 2" 
+        return 2 # Class 2 
+    else: 
+        rule = "If feature 2 >= 2.0 and feature 3 <=1.5, assign to Class 1" 
+        return 1 # Class 1 
+    print("Rule:", rule) 
+ 
+# Apply the rule-based classifier to make predictions on the test set 
+y_pred = [rule_based_classifier(x) for x in X_test]
+
+# Calculate accuracy, confusion matrix, and classification report 
+accuracy = accuracy_score(y_test, y_pred) 
+conf_matrix = confusion_matrix(y_test, y_pred)
+classification_rep = classification_report(y_test, y_pred, target_names=iris.target_names) 
+ 
+# Print the results 
+print("Accuracy:", accuracy) 
+print("Confusion Matrix:\n", conf_matrix) 
+print("Classification Report:\n", classification_rep)
