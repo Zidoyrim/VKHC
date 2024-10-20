@@ -426,6 +426,9 @@ if __name__ == "__main__":
     result = tutor.perform_operation(operator, a, b)  
     print(f"Result of {a} {operator} {b} = {result}")
 
+
+
+
 Practical 9
 
 Design a simple language parser
