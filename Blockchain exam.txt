@@ -1,0 +1,1740 @@
+Blockchain exam
+
+Practical 1:
+ RSA algorithm
+Code:
+import hashlib
+import random
+import binascii
+import datetime
+import collections
+from Crypto.PublicKey import RSA
+from Crypto import Random
+from Crypto.Cipher import PKCS1_v1_5
+
+class Client:
+    def __init__(self):
+        random_generator = Random.new().read
+        self._private_key = RSA.generate(1024, random_generator)
+        self._public_key = self._private_key.publickey()
+        self._signer = PKCS1_v1_5.new(self._private_key)
+
+    @property
+    def identity(self):
+        return binascii.hexlify(self._public_key.exportKey(format='DER')).decode('ascii')
+
+Bhavik = Client()
+print("Sender:", Bhavik.identity)
+Practical 3: Transfer ether one contract to another use REMIX IDE
+Code:
+pragma solidity ^0.8.0;
+ contract sendEther{
+ function getBalance() external view returns(uint)
+ {
+ return address(this).balance;
+ }
+ receive() external payable { }
+ }
+
+
+
+Practical 4: Transfer ether form one account to another use REMIX IDE
+Code:
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.11;
+
+contract Sender {
+    uint public amount;
+    address payable public owner;
+
+    constructor() {
+        owner = payable(msg.sender); // Set the deployer of the contract as the owner
+    }
+
+    function sendEth(address payable receiver) public payable {
+        require(msg.sender == owner, "Only the owner can send funds");
+        require(msg.value > 0, "Amount must be greater than zero");
+        
+        amount = msg.value;
+        receiver.transfer(amount);
+    }
+}
+
+ 
+
+2.
+ Transfer ethers from one contract to another on an Ethereum testnet.
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.8.11;
+
+contract SendEther {
+    
+    // Function to get the contract's balance
+    function getBalance() external view returns (uint) {
+        return address(this).balance;
+    }
+
+    // Fallback function to receive Ether
+    receive() external payable {}
+}
+
+
+
+
+Practical 5: implement and demonstrate using solidity in REMIX IDE. Variable, Operator, Loops, Decision making, string, Array, Enums and structs
+
+A)Variables:
+supports three types of variables.
+ State Variables − Variables whose values are permanently stored in a contract storage.
+ Local Variables − Variables whose values are present till function is executing.
+ Global Variables − Special variables exists in the global namespace used to get information about the
+ blockchain.i.e. blockhash(uint blockNumber) returns (bytes32), block.coinbase (address payable),
+ block.difficulty (uint)…..and many more.
+
+Code:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+contract SolidityTest {
+    uint storedData; // State variable
+
+    constructor() public {
+        storedData = 10;
+    }
+
+    function getResult() public view returns (uint) {
+        uint a = 1; // Local variable
+        uint b = 2;
+        uint result = a + b;
+        return result; // Returns the sum of local variables
+    }
+}
+
+
+
+1.State Variable:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+// Creating a contract to demonstrate state variables
+contract SolidityVarTest {
+    
+    // Declaring a state variable
+    uint8 public stateVar;
+
+    // Constructor to initialize the state variable
+    constructor() public {
+        stateVar = 16;
+    }
+}
+
+
+
+2.Local Variable:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+// Creating a contract to demonstrate local variables
+contract SolidityVarTest {
+    
+    // Function to demonstrate local variable scope
+    function getResult() public pure returns (uint) {
+        // Initializing local variables
+        uint localVar1 = 1;
+        uint localVar2 = 2;
+        uint result = localVar1 + localVar2;
+
+        // Returning the local variable result
+        return result;
+    }
+}
+
+
+
+ 3. Global variable:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+// Creating a contract to demonstrate Global Variables
+contract Test {
+    
+    // Defining a state variable to store the contract admin
+    address public admin;
+
+    // Constructor to initialize the admin with the sender's address
+    constructor() public {
+        admin = msg.sender; // 'msg.sender' is a global variable
+    }
+}
+
+
+Scope of local variables is limited to function in which they are defined but State variables can have three
+types of scopes.
+ Public − Public state variables can be accessed internally as well as via messages. For a public state
+ variable, an automatic getter function is generated.
+
+ Internal − Internal state variables can be accessed only internally from the current contract or contract
+ deriving from it without using this.
+
+ Private − Private state variables can be accessed only internally from the current contract they are defined
+ not in the derived contract from it.
+
+
+B)Operators
+Solidity supports the following types of operators.
+Arithmetic Operators
+Comparison Operators
+Logical (or Relational) Operators
+Assignment Operators
+Conditional (or ternary) Operators
+
+1. Arithematic Operator
+Code:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+// Creating a contract to demonstrate Arithmetic Operators
+contract SolidityTest {
+    
+    // Initializing variables
+    uint16 public a = 20;
+    uint16 public b = 10;
+
+    // Performing arithmetic operations
+    uint public sum = a + b;  // Addition
+    uint public diff = a - b; // Subtraction
+    uint public mul = a * b;  // Multiplication
+    uint public div = a / b;  // Division
+    uint public mod = a % b;  // Modulus
+
+    // Increment and decrement values (performed inside a function)
+    uint public inc;
+    uint public dec;
+
+    constructor() public {
+        inc = a + 1;  // Incrementing 'a'
+        dec = b - 1;  // Decrementing 'b'
+    }
+}
+
+
+
+2.Relational Operator
+Code:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+// Creating a contract to demonstrate Relational Operators
+contract SolidityTest {
+    
+    // Declaring variables
+    uint16 public a = 20;
+    uint16 public b = 10;
+
+    // Initializing variables with relational operation results
+    bool public eq = (a == b);   // Equal to
+    bool public noteq = (a != b); // Not equal to
+    bool public gtr = (a > b);    // Greater than
+    bool public les = (a < b);    // Less than
+    bool public gtreq = (a >= b); // Greater than or equal to
+    bool public leseq = (a <= b); // Less than or equal to
+}
+ 
+
+
+3.Logical Operators
+Code:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+// Creating a contract to demonstrate Logical Operators
+contract LogicalOperator {
+    
+    // Defining function to demonstrate logical operators
+    function Logic(bool a, bool b) public pure returns (bool, bool, bool) {
+        // Logical AND operator
+        bool andOp = a && b;
+
+        // Logical OR operator
+        bool orOp = a || b;
+
+        // Logical NOT operator
+        bool notOp = !a;
+
+        return (andOp, orOp, notOp);
+    }
+}
+
+
+
+4.Bitwise Operators
+Code:
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+// Creating a contract to demonstrate Bitwise Operators
+contract SolidityTest {
+    
+    // Declaring variables
+    uint16 public a = 20;
+    uint16 public b = 10;
+
+    // Bitwise AND operation
+    uint16 public andOp = a & b;
+
+    // Bitwise OR operation (renamed to avoid reserved keyword conflict)
+    uint16 public orOp = a | b;
+
+    // Bitwise XOR operation
+    uint16 public xorOp = a ^ b;
+
+    // Bitwise left shift operation
+    uint16 public leftShift = a << b;
+
+    // Bitwise right shift operation
+    uint16 public rightShift = a >> b;
+
+    // Bitwise NOT operation (Converted to int16 for proper representation)
+    int16 public notOp = int16(~a);
+}
+
+
+
+5.Assignment Operator
+Code:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+// Creating a contract to demonstrate Assignment Operators
+contract SolidityTest {
+    
+    // Declaring variables
+    uint16 public assignment = 20;
+    uint public assignment_add = 50;
+    uint public assign_sub = 50;
+    uint public assign_mul = 10;
+    uint public assign_div = 50;
+    uint public assign_mod = 32;
+
+    // Function to demonstrate Assignment Operators
+    function getResult() public returns (
+        uint, uint, uint, uint, uint
+    ) {
+        assignment_add += 10;  // Addition assignment
+        assign_sub -= 20;      // Subtraction assignment
+        assign_mul *= 10;      // Multiplication assignment
+        assign_div /= 10;      // Division assignment
+        assign_mod %= 20;      // Modulus assignment
+
+        return (assignment_add, assign_sub, assign_mul, assign_div, assign_mod);
+    }
+}
+
+
+
+6.Conditional Operators
+Code:
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+// Creating a contract to demonstrate Conditional Operator
+contract SolidityTest {
+    
+    // Function to demonstrate conditional (ternary) operator
+    function sub(uint a, uint b) public pure returns (uint) {
+        uint result = (a > b ? a - b : b - a);
+        return result;
+    }
+}
+
+
+
+C)Loops
+ 1.While loop: The most basic loop in Solidity is the while loop which would be discussed in this chapter.
+The purpose of a while loop is to execute a statement or code block repeatedly as long as an expression is
+true. Once the expression becomes false, the loop terminates.
+
+ 2.do-while loop: The do...while loop is similar to the while loop except that the condition check happens at the end of the loop. This means that the loop will always be executed at least once, even if the condition is false.
+
+ 3.for loop: The for loop is the most compact form of looping. It includes the following three important
+parts 
+
+4.loop control: Solidity provides full control to handle loops and switch statements. Solidity provides break and continue statements. These statements are used to immediately come out of any loop or to start the next iteration of any loop respectively.
+
+ 1.While Loop
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+// Creating a contract to demonstrate a while loop
+contract PractThree {
+
+    // Function to calculate the sum of numbers from 's' to 'e'
+    function test(int s, int e) public pure returns (int) {
+        int sum = 0;
+        int i = s;
+
+        while (i <= e) {
+            sum += i; // sum = sum + i;
+            i++;
+        }
+        return sum;
+    }
+}
+
+
+2.Do-while loop:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+// Creating a contract to demonstrate a do-while loop
+contract PractThree {
+
+    // Function to calculate the sum of numbers from 's' to 'e'
+    function test(int s, int e) public pure returns (int) {
+        int sum = 0;
+        int i = s;
+
+        // Do-while loop to calculate the sum
+        do {
+            sum += i; // sum = sum + i;
+            i++;
+        } while (i <= e);
+        
+        return sum;
+    }
+}
+
+
+3.For Loop:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+// Creating a contract to demonstrate a for loop
+contract PractThree {
+
+    // Function to calculate the sum of numbers from 's' to 'e'
+    function test(int s, int e) public pure returns (int) {
+        int sum = 0;
+
+        // For loop to calculate the sum
+        for (int i = s; i <= e; i++) {
+            sum += i; // sum = sum + i;
+        }
+        
+        return sum;
+    }
+}
+
+
+ 4.loop Control: (Break statement)
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+// Creating a contract
+contract SolidityTest {
+    
+    uint storedData; // State variable
+
+    // Constructor to initialize storedData
+    constructor() public {
+        storedData = 10;
+    }
+
+    // Function to demonstrate string conversion
+    function getResult() public pure returns (string memory) {
+        uint a = 1;
+        uint b = 2;
+        uint result = a + b;
+        return integerToString(result);
+    }
+
+    // Function to convert integer to string
+    function integerToString(uint _i) internal pure returns (string memory) {
+        if (_i == 0) {
+            return "0";
+        }
+
+        uint j = _i;
+        uint len;
+        while (j != 0) {
+            len++;
+            j /= 10;
+        }
+
+        bytes memory bstr = new bytes(len);
+        uint k = len - 1;
+        
+        while (_i != 0) {
+            bstr[k--] = bytes1(uint8(48 + _i % 10)); // Corrected type conversion
+            _i /= 10;
+        }
+
+        return string(bstr);
+    }
+}
+
+
+
+4.Loop Control(continue statement)
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+// Creating a contract
+contract SolidityTest {
+    
+    uint storedData; // State variable
+
+    // Constructor to initialize storedData
+    constructor() public {
+        storedData = 10;
+    }
+
+    // Function to demonstrate 'continue' in a while loop
+    function getResult() public pure returns (string memory) {
+        uint n = 1;
+        uint sum = 0;
+
+        while (n < 10) {
+            n++;
+            
+            if (n == 5) {
+                continue; // Skip n in sum when it is 5
+            }
+
+            sum += n;
+        }
+        
+        return integerToString(sum);
+    }
+
+    // Function to convert integer to string
+    function integerToString(uint _i) internal pure returns (string memory) {
+        if (_i == 0) {
+            return "0";
+        }
+
+        uint j = _i;
+        uint len;
+        
+        while (j != 0) {
+            len++;
+            j /= 10;
+        }
+
+        bytes memory bstr = new bytes(len);
+        uint k = len - 1;
+        
+        while (_i != 0) {
+            bstr[k--] = bytes1(uint8(48 + _i % 10)); // Corrected type conversion
+            _i /= 10;
+        }
+
+        return string(bstr);
+    }
+}
+
+
+
+ D)Decision Making
+ 1.if statement:
+The if statement is the fundamental control statement that allows Solidity to make decisions and execute statements conditionally.
+Code:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+// Creating a contract
+contract SolidityTest {
+    
+    uint storedData; // State variable
+
+    // Constructor to initialize storedData
+    constructor() public {
+        storedData = 10;
+    }
+
+    // Function to return the sum of two numbers as a string
+    function getResult() public pure returns (string memory) {
+        uint a = 1;
+        uint b = 2;
+        uint result = a + b;
+        return integerToString(result);
+    }
+
+    // Function to convert an integer to a string
+    function integerToString(uint _i) internal pure returns (string memory) {
+        if (_i == 0) { // If statement
+            return "0";
+        }
+
+        uint j = _i;
+        uint len;
+
+        // Find the number of digits
+        while (j != 0) {
+            len++;
+            j /= 10;
+        }
+
+        bytes memory bstr = new bytes(len);
+        uint k = len - 1;
+
+        // Convert the number to a string
+        while (_i != 0) {
+            bstr[k--] = bytes1(uint8(48 + _i % 10)); // Corrected type conversion
+            _i /= 10;
+        }
+
+        return string(bstr);
+    }
+}
+
+
+
+2.if-elsestatement:
+The 'if...else' statement is the next form of control statement that allows Solidity to execute statements in a more controlled way.
+Code:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+// Creating a contract
+contract Types {
+    // Declaring state variables
+    uint public i = 10;
+    bool public even;
+
+    // Defining function to demonstrate
+    // 'if...else' statement
+    function decision_making() public view returns (bool) {
+        if (i % 2 == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+}
+
+
+
+ 3.if-else..if statement:
+The if...else if... statement is an advanced form of if...else that allows Solidity to make a correct decision out of several conditions.
+Code:
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+// Creating a contract
+contract Types {
+    // Declaring state variables
+    uint public i = 12;
+    string public result;
+
+    // Defining function to demonstrate
+    // 'if...else if...else' statement
+    function decision_making() public view returns (string memory) {
+        if (i < 10) {
+            return "less than 10";
+        } else if (i == 10) {  // Fixed `else if`
+            return "equal to 10";
+        } else {
+            return "greater than 10";
+        }
+    }
+}
+
+
+
+E)String: PUBLIC FUNCTION
+Solidity supports String literal using both double quote(")and single quote('). It provides string as a data type to declare a variable of type String.(Int to str).
+Code:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+// Creating a contract
+contract SolidityTest {
+    
+    // Function to return sum of two numbers as a string
+    function getResult() public pure returns (string memory) {
+        uint a = 1;
+        uint b = 2;
+        uint result = a + b;
+        return integerToString(result);
+    }
+
+    // Internal function to convert an integer to string
+    function integerToString(uint _i) internal pure returns (string memory) {
+        if (_i == 0) {
+            return "0";
+        }
+
+        uint j = _i;
+        uint len;
+        
+        while (j != 0) {
+            len++;
+            j /= 10;
+        }
+
+        bytes memory bstr = new bytes(len);
+        uint k = len - 1;
+        
+        while (_i != 0) {
+            bstr[k--] = bytes1(uint8(48 + _i % 10)); // Fixed byte conversion
+            _i /= 10;
+        }
+        
+        return string(bstr);
+    }
+}
+
+
+
+F)Array
+ Arrayisadatastructure,whichstoresafixed size sequential collection of elements of thesametype. An
+ array is used to store a collection of data, but it is often more useful to think of an arrayasacollectionof
+ variablesofthesametype.
+Code:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+// Creating a contract
+contract Types {
+    // Declaring an array
+    uint[6] public data;
+
+    // Function to assign values to array
+    function array_example() public {
+        data = [uint(10), 20, 30, 40, 50, 60];
+    }
+
+    // Function to return the full array
+    function result() public view returns (uint[6] memory) {
+        return data;
+    }
+
+    // Function to access a value from the array at a specific index
+    function array_element() public view returns (uint) {
+        return data[2]; // Returns the value at index 2
+    }
+}
+
+
+
+G)Enums
+Enumsrestrictavariabletohaveoneofonlyafewpredefinedvalues.Thevaluesinthisenumeratedlistare
+calledenums.Withtheuseofenumsitispossibletoreducethenumberofbugsinyourcode.
+Code:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+// Creating a contract
+contract Types {
+    
+    // Creating an enumerator
+    enum week_days { Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday }
+
+    // Declaring variables of type enumerator
+    week_days public week;
+    week_days public choice;
+
+    // Setting a default value
+    week_days public constant default_value = week_days.Sunday;
+
+    // Function to set value of choice
+    function set_value() public {
+        choice = week_days.Thursday;
+    }
+
+    // Function to return value of choice
+    function get_choice() public view returns (week_days) {
+        return choice;
+    }
+
+    // Function to return default value
+    function get_default_value() public pure returns (week_days) {
+        return default_value;
+    }
+}
+
+
+
+H)Structure
+Code:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+// Defining contract
+contract Test {
+    
+    // Defining a structure
+    struct Book {
+        string title;
+        string author;
+        uint book_id;
+    }
+    
+    // Declaring a state variable of struct type
+    Book public book;
+
+    // Function to set book details dynamically
+    function setBook(string memory _title, string memory _author, uint _bookId) public {
+        book = Book(_title, _author, _bookId);
+    }
+
+    // Function to get book ID
+    function getBookId() public view returns (uint) {
+        return book.book_id;
+    }
+}
+
+
+
+I)Mappings
+KeyType−canbeanybuilt-in types plus bytes and string. No reference type or complex objects are  allowed. 
+
+ _ValueType−can be any type.
+Code:
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+contract LedgerBalance {
+    
+    // Mapping to store balances
+    mapping(address => uint) private balance;
+
+    // Function to set balance (allows setting any value)
+    function setBalance(uint _amount) public returns (uint) {
+        balance[msg.sender] = _amount;
+        return balance[msg.sender];
+    }
+
+    // Function to get the balance of the caller
+    function getBalance() public view returns (uint) {
+        return balance[msg.sender];
+    }
+}
+
+
+
+Practical 5(B):Solidity program for function overloading, mathematical functions, cryptographic function, View functions, Pure functions and fallback function.
+
+ A)FunctionOverloading:
+ Thedefinitionofthefunctionmustdifferfromeachotherbythetypesand/orthenumberofargumentsintheargumentlist.Youcannotoverloadfunctiondeclarationsthatdifferonlybyreturntype.
+Code:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+contract Test {
+
+    // Function to add two numbers
+    function getSum(uint a, uint b) public pure returns (uint) {
+        return a + b;
+    }
+
+    // Function to add three numbers (renamed to avoid overloading issue)
+    function getSumThree(uint a, uint b, uint c) public pure returns (uint) {
+        return a + b + c;
+    }
+
+    // Function to call getSum with two arguments
+    function callSumWithTwoArguments() public pure returns (uint) {
+        return getSum(2, 2);
+    }
+
+    // Function to call getSumThree with three arguments
+    function callSumWithThreeArguments() public pure returns (uint) {
+        return getSumThree(1, 2, 4);
+    }
+}
+
+
+B)MathematicalFunction:
+ Solidityprovidesinbuiltmathematicalfunctionsaswell.
+Code:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+contract Test {
+
+    // Function to compute (4 + 5) % 3 using addmod
+    function callAddMod() public pure returns (uint) {
+        return addmod(4, 5, 3); // (4 + 5) % 3 = 9 % 3 = 0
+    }
+
+    // Function to compute (4 * 5) % 3 using mulmod
+    function callMulMod() public pure returns (uint) {
+        return mulmod(4, 5, 3); // (4 * 5) % 3 = 20 % 3 = 2
+    }
+}
+
+CryptographicFunction:
+ Solidityprovidesinbuiltcryptographicfunctionsaswell.
+Code:
+ / SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+contract Test {
+
+    // Function to compute the Keccak-256 hash of "ABC"
+    function callKeccak256() public pure returns (bytes32 result) {
+        return keccak256(abi.encodePacked("ABC"));
+    }
+}
+
+
+
+C)Function:
+
+Afunctionisagroupofreusablecodewhichcanbecalledanywhereinyourprogram.Thiseliminatesthe
+needofwritingthesamecodeagainandagain.Ithelpsprogrammersinwritingmodularcodes.
+Code:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.5.0;
+
+contract SolidityTest {
+    
+    constructor() public { }
+
+    function getResult() public pure returns (string memory) {
+        uint a = 1;
+        uint b = 2;
+        uint result = a + b;
+        return integerToString(result);
+    }
+
+    function integerToString(uint _i) internal pure returns (string memory) {
+        if (_i == 0) {
+            return "0";
+        }
+        uint j = _i;
+        uint len;
+        while (j != 0) {
+            len++;
+            j /= 10;
+        }
+        bytes memory bstr = new bytes(len);
+        uint k = len - 1;
+        while (_i != 0) {
+            bstr[k--] = bytes1(uint8(48 + _i % 10));
+            _i /= 10;
+        }
+        return string(bstr); // Access local variable
+    }
+}
+
+
+
+
+D)ViewFunction:
+Viewfunctionsensurethattheywillnotmodifythestate.Afunctioncanbedeclaredasview.Gettermethod
+ arebydefaultviewfunctions.
+Code:
+pragma solidity ^0.4.23;
+
+contract Test {
+    // Declaring variable
+    string public str;
+
+    // Defining a constructor
+    constructor(string memory str_in) public {
+        str = str_in;
+    }
+
+    // Defining a function to return the value of 'str'
+    function str_out() public view returns (string memory) {
+        return str;
+    }
+}
+
+
+
+E)Pure Function:
+ Pure functions ensure that they not read or modify the state. A function can be declared as pure. Pure
+ functions can use the revert() and require() functions to revert potential state changes if an error occurs.
+Code:
+ pragma solidity ^0.5.0;
+
+contract Test {
+    int public x = 10; // Global (state) variable
+    int private y = 90; // Private state variable
+
+    // Function that modifies and returns `x`
+    function f1() public returns (int) {
+        x = 100; // Allowed since it's a state-changing function
+        return x;
+    }
+
+    // View function (can read, but cannot modify state variables)
+    function f2() public view returns (int) {
+        // x = 100; // Error: Cannot modify state in a `view` function
+        return x; // Allowed: Reading is permitted
+    }
+
+    // Pure function (cannot read or modify state variables)
+    function f3() public pure returns (int) {
+        int z = 80; // Local variable (not stored in blockchain)
+        return z; // Allowed: Only local variables can be used
+    }
+}
+
+
+
+ F)FallbackFunction:
+ Fallbackfunctionisaspecialfunctionavailabletoacontract.
+Code:
+ pragma solidity ^0.5.0;
+
+contract Test {
+    uint public x;
+
+    // External fallback function (not payable)
+    function() external {
+        x = 1; // This gets triggered when a non-existing function is called
+    }
+}
+
+contract Sink {
+    // External payable fallback function to receive Ether
+    function() external payable { }
+}
+
+contract Caller {
+    function callTest(Test test) public returns (bool) {
+        (bool success, ) = address(test).call(abi.encodeWithSignature("nonExistingFunction()"));
+        require(success, "Call to non-existing function failed");
+
+        // `test.x` is now set to 1
+
+        address payable testPayable = payable(address(test));
+        
+        // Sending Ether to Test contract, expected to fail (returns false)
+        return (testPayable.send(2 ether));
+    }
+
+    function callSink(Sink sink) public returns (bool) {
+        address payable sinkPayable = address(uint160(address(sink)));
+
+        // Sending Ether to Sink contract (should succeed if it has a payable fallback function)
+        return (sinkPayable.send(2 ether));
+    }
+}
+
+
+
+Practical 6:-ImplementanddemonstratetheuseofthefollowinginSolidity.
+6(A). Withdrawal Pattern, Restricted Access.
+Code:
+pragma solidity ^0.5.0;
+
+contract SolidityTest {
+    uint storedData; // State variable
+    uint public a = 10; // Another state variable
+
+    // Constructor to initialize storedData
+    constructor() public {
+        storedData = 10;
+    }
+
+    // Function that uses local variables
+    function getResult(uint c) public view returns (uint) {
+        uint a = 1; // Local variable (shadows the state variable `a`)
+        uint b = 2;
+        uint result = a + b;
+        return result; // Returns the sum of local variables
+    }
+}
+
+
+
+
+ Withdraw Pattern:
+Code:
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity ^0.8.4;
+
+contract SendContract {
+    address payable public richest;
+    uint public mostSent;
+
+    error NotEnoughEther();
+
+    constructor() payable {
+        richest = payable(msg.sender);
+        mostSent = msg.value;
+    }
+
+    function becomeRichest() public payable {
+        if (msg.value <= mostSent) revert NotEnoughEther();
+
+        address payable previousRichest = richest;
+        uint previousAmount = mostSent;
+
+        richest = payable(msg.sender);
+        mostSent = msg.value;
+
+        (bool success, ) = previousRichest.call{value: previousAmount}("");
+        require(success, "Transfer failed");
+    }
+}
+
+
+
+
+ Restricted Access:
+Code:
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity ^0.8.4;
+
+contract AccessRestriction {
+    address public owner = msg.sender;
+    uint public creationTime = block.timestamp;
+
+    error Unauthorized();
+    error TooEarly();
+    error NotEnoughEther();
+
+    modifier onlyBy(address account) {
+        if (msg.sender != account) revert Unauthorized();
+        _;
+    }
+
+    modifier onlyAfter(uint time) {
+        if (block.timestamp < time) revert TooEarly();
+        _;
+    }
+
+    modifier costs(uint amount) {
+        if (msg.value < amount) revert NotEnoughEther();
+        _;
+        if (msg.value > amount) {
+            payable(msg.sender).transfer(msg.value - amount);
+        }
+    }
+
+    function changeOwner(address newOwner) public onlyBy(owner) {
+        owner = newOwner;
+    }
+
+    function disown() public onlyBy(owner) onlyAfter(creationTime + 6 weeks) {
+        delete owner;
+    }
+
+    function forceOwnerChange(address newOwner) public payable costs(200 ether) {
+        owner = newOwner;
+    }
+}
+
+
+
+
+6(B):SOLIDITY PROGRAM FOR CONTRACT, INHERITANCE,CONSTRUCTORS,ABSTRACT CONTRACTS, INTERFACES, LIBRARIES, ASSEMBLY, EVENTS, ERROR
+ HANDLING.
+A)Contract:
+ ContractinSolidityissimilartoaClassinC++.AContracthavefollowingproperties.
+
+ Constructor−Aspecial functiondeclaredwithconstructorkeywordwhichwillbeexecutedonceper
+ contractandisinvokedwhenacontractiscreated.
+
+ StateVariables−VariablesperContracttostorethestateofthecontract.
+
+ Functions−FunctionsperContractwhichcanmodifythestatevariablestoalterthestateofacontract.
+Code:
+ pragma solidity ^0.5.0;
+
+contract C {
+    // Private state variable
+    uint private data;
+
+    // Public state variable
+    uint public info;
+
+    // Constructor
+    constructor() public {
+        info = 10;
+    }
+
+    // Private function
+    function increment(uint a) private pure returns (uint) {
+        return a + 1;
+    }
+
+    // Public function to update data
+    function updateData(uint a) public {
+        data = a;
+    }
+
+    // Public function to get data
+    function getData() public view returns (uint) {
+        return data;
+    }
+
+    // Internal function to compute sum
+    function compute(uint a, uint b) internal pure returns (uint) {
+        return a + b;
+    }
+}
+
+
+
+// Derived Contract
+contract E is C {
+    uint private result;
+    C private c;
+
+    // Constructor
+    constructor() public {
+        c = new C();
+    }
+
+    // Function to compute result using internal function
+    function getComputedResult() public {
+        result = compute(3, 5);
+    }
+
+    // Function to get the computed result
+    function getResult() public view returns (uint) {
+        return result;
+    }
+
+    // Function to access public info from contract C
+    function getData() public view returns (uint) {
+        return c.info();
+    }
+}
+
+
+
+B)Inheritance:
+ Inheritance is a way to extend functionality of a contract. Solidity supports both single as well as multiple
+ inheritance
+Code:
+ pragma solidity >=0.4.22 <0.6.0;
+
+// Defining parent contract
+contract Parent {
+    // Declaring internal state variable
+    uint internal sum;
+
+    // Defining external function to set the value of sum
+    function setValue() external {
+        uint a = 20;
+        uint b = 20;
+        sum = a + b;
+    }
+}
+
+
+
+// Defining child contract
+contract Child is Parent {
+    // Function to get the value of sum
+    function getValue() external view returns (uint) {
+        return sum;
+    }
+}
+
+// Defining caller contract
+contract Caller {
+    // Creating an instance of the Child contract
+    Child cc = new Child();
+
+    // Function to call setValue from Child contract
+    function testInheritance() public {
+        cc.setValue();
+    }
+
+    // Function to get the result from Child contract
+    function result() public view returns (uint) {
+        return cc.getValue();
+    }
+}
+
+
+
+C)Constructors:
+ Constructorisaspecialfunctiondeclaredusingconstructorkeyword. It isanoptionalfunctionandisused
+ toinitializestatevariablesofacontract.Followingarethekeycharacteristicsofaconstructor.
+ A contract can have only one constructor.
+ A constructor code is executed once when a contract is created and it is used to initialize contract state.
+ A constructor can be either public or internal.
+ An internal construct or marks the contract as abstract.
+ Incase,noconstructorisdefined,adefaultconstructorispresentinthecontract.
+Code:
+pragma solidity ^0.5.0;
+
+// Base contract
+contract Base {
+    uint data;
+
+    // Constructor to initialize data
+    constructor(uint _data) public {
+        data = _data;
+    }
+
+    // Function to return data
+    function getResult() public view returns (uint) {
+        return data;
+    }
+}
+
+// Derived contract inheriting from Base
+contract Derived is Base {
+    // Passing a fixed value (5) to the Base constructor
+    constructor() Base(5) public {}
+}
+
+Code:
+//Indirect Initialization of Base Constructor
+ pragma solidity ^0.5.0;
+
+// Base contract
+contract Base {
+    uint data;
+
+    // Constructor to initialize data
+    constructor(uint _data) public {
+        data = _data;
+    }
+
+    // Function to return data
+    function getResult() public view returns (uint) {
+        return data;
+    }
+}
+
+// Derived contract inheriting from Base
+contract Derived is Base {
+    // Passing the square of _info to the Base constructor
+    constructor(uint _info) Base(_info * _info) public {}
+}
+
+ D)Abstract Contracts:
+ Abstract Contract is one which contains at least one function without any implementation. Such a contract is
+ used as a base contract. Generally an abstract contract contains both implemented as well as abstract
+ functions. Derived contract will implement the abstract function and use the existing functions as and when
+ required.
+Code: 
+ pragma solidity ^0.5.0;
+
+// Base contract with an unimplemented function
+contract Calculator {
+    function getResult() public view returns (uint);
+}
+
+// Derived contract implementing Calculator
+contract Test is Calculator {
+    function getResult() public view returns (uint) {
+        uint a = 4;
+        uint b = 2;
+        uint result = a + b;
+        return result;
+    }
+}
+
+
+
+E)Interfaces:
+ Interfaces are similar to abstract contracts and are created using interface keyword. Following are the key
+ characteristics of an interface.
+ Interface can not have any function with implementation.
+ Functions of an interface can be only of type external.
+ Interface can not have constructor.
+ Interface can not have state variables.
+Code:
+ pragma solidity ^0.5.0;
+
+// Define an interface
+interface Calculator {
+    function getResult() external view returns (uint);
+}
+
+// Implement the interface
+contract Test is Calculator {
+    constructor() public {}
+
+    function getResult() external view returns (uint) {
+        uint a = 5;
+        uint b = 2;
+        uint result = a + b;
+        return result;
+    }
+}
+
+
+
+6(C):Libraries, Assembly,  Events,  Error handling.
+ Libraries:
+ Libraries are similar to Contracts but are mainly intended for reuse. A Library contains functions which
+ other contracts can call. Solidity have certain restrictions on use of a Library.
+Code:
+ pragma solidity ^0.5.0;
+
+// Library for searching an element in an array
+library Search {
+    function indexOf(uint[] memory self, uint value) internal pure returns (uint) {
+        for (uint i = 0; i < self.length; i++) {
+            if (self[i] == value) return i;
+        }
+        return uint(-1); // Return -1 if not found
+    }
+}
+
+// Contract using the Search library
+contract Test {
+    using Search for uint[]; // Attach library to uint[]
+
+    uint[] private data;
+    uint private value;
+    uint private index;
+
+    constructor() public {
+        data.push(6);
+        data.push(7);
+        data.push(8);
+        data.push(9);
+        data.push(10);
+    }
+
+    function isValuePresent(uint _value) external {
+        value = _value;
+        index = data.indexOf(value); // Using the library function
+    }
+
+    function getResult() public view returns (uint) {
+        return index;
+    }
+}
+
+
+
+ Assembly:
+ Solidity provides an option to use assembly language to write inline assembly within Solidity source code.
+ We can also write a standalone assembly code which then be converted to bytecode.
+COde:
+pragma solidity ^0.5.0;
+
+library Sum {
+    function sumUsingInlineAssembly(uint[] memory _data) internal pure returns (uint o_sum) {
+        assembly {
+            let len := mload(_data) // Load array length
+            let data := add(_data, 0x20) // Point to first element
+            
+            for { let i := 0 } lt(i, len) { i := add(i, 1) } {
+                o_sum := add(o_sum, mload(add(data, mul(i, 0x20))))
+            }
+        }
+    }
+}
+
+contract Test {
+    using Sum for uint[]; // Attach library to uint[]
+    
+    uint[] private data;
+
+    constructor() public {
+        data.push(1);
+        data.push(2);
+        data.push(3);
+        data.push(4);
+        data.push(5);
+    }
+
+    function sum() external view returns (uint) {
+        uint[] memory tempData = data; // Copy storage array to memory
+        return tempData.sumUsingInlineAssembly(); // Call the library function
+    }
+}
+
+Events:
+ Event is an inheritable member of a contract. An event is emitted, it stores the arguments passed in
+ transaction logs.An event generated is not accessible from within contracts, not even
+ the one which have created and emitted them.
+Code:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract EventExample {
+    // Declaring a state variable
+    uint256 public value;
+
+    // Declaring an event
+    event Increment(address indexed owner, uint256 newValue);
+
+    // Defining a function that logs the event
+    function getValue(uint256 _a, uint256 _b) public {
+        value = _a + _b; // Update state first
+        emit Increment(msg.sender, value); // Emit event with updated value
+    }
+}
+
+ErrorHandling:
+ Solidityprovidesvariousfunctionsforerrorhandling.Generallywhenanerroroccurs, thestateisreverted
+ backtoitsoriginalstate.Otherchecksaretopreventunauthorizedcodeaccess.
+
+Solidityprogramtodemonstraterequirestatement.
+Code:
+ //Solidityprogramto
+ //demonstraterequire
+ //statement
+ pragma solidity ^0.5.0;
+ //Creatingacontract
+ contractrequireStatement{
+ //Definingfunctionto
+ //checkinput
+ functioncheckInput(uint8_input)publicviewreturns(stringmemory){
+ require(_input>=0,"invaliduint");
+ require(_input<=255,"invaliduint8");
+ return"InputisUint8";
+ }
+ //Definingfunctionto
+ //userequirestatement
+ functionOdd(uint_input)publicviewreturns(bool){
+ require(_input%2!=0);
+ returntrue;
+ }
+ }
+
+
+
+ Solidity program to demonstrate assert statement.
+Code:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract AssertStatement {
+    // State variable to store the result of assert
+    bool private result;
+
+    // Function to check for overflow
+    function checkOverflow(uint8 num1, uint8 num2) public {
+        uint8 sum = num1 + num2;
+        
+        // Assert statement: should never fail unless there's an internal bug
+        assert(sum >= num1 && sum >= num2); 
+        
+        result = true; // If assert does not fail, no overflow
+    }
+
+    // Function to return the result
+    function getResult() public view returns (string memory) {
+        return result ? "No Overflow" : "Overflow exists";
+    }
+}
+
+
+
+Solidity program to demonstrate revert statement.
+Code:
+ // SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract RevertStatement {
+    // Function to check for overflow
+    function checkOverflow(uint8 num1, uint8 num2) public pure returns (string memory, uint) {
+        uint sum = num1 + num2;
+
+        // Solidity 0.8+ automatically prevents overflow, but revert can be used for manual handling
+        if (sum > 255) {
+            revert("Overflow Exists");
+        }
+
+        return ("No Overflow", sum);
+    }
+}
+
+
+
+Practical9:ImplementtheminingmoduleofBitcoinclient.Theminingmodule,orminer,shouldproduce
+ blocksthatsolveproof-of-work puzzle
+Code:(Python)
+# Install bitcoinlib if not installed
+# pip install bitcoinlib
+
+from bitcoinlib.wallets import Wallet
+
+# Create a new wallet
+w = Wallet.create('Wallet1')
+
+# Get a key (address) from the wallet
+key1 = w.get_key()
+print('Wallet Address:', key1.address)
+
+# Scan the wallet for transactions
+w.scan()
+
+# Print wallet information
+print(w.info())
+
+Practical 10:Compile and test smart contracts on a testing framework using the Ethereum Virtual Machine (EVM)
+Code:
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity >=0.7.0 <0.9.0;
+
+import "remix_tests.sol"; // This import is automatically injected by Remix.
+import "hardhat/console.sol"; 
+import "../contracts/3_Ballot.sol"; // Ensure this path is correct.
+
+contract BallotTest {
+    bytes32[] proposalNames;
+    Ballot ballotToTest;
+
+    // This function runs before all tests.
+    function beforeAll() public {
+        proposalNames.push(bytes32("candidate1"));
+        ballotToTest = new Ballot(proposalNames);
+    }
+
+    function checkWinningProposal() public {
+        console.log("Running checkWinningProposal");
+
+        ballotToTest.vote(0); // Cast vote for proposal at index 0
+
+        // Assert that proposal at index 0 is the winning proposal
+        Assert.equal(ballotToTest.winningProposal(), uint(0), "Proposal at index 0 should be the winning proposal");
+        
+        // Assert that the winner's name matches "candidate1"
+        Assert.equal(ballotToTest.winnerName(), bytes32("candidate1"), "Candidate1 should be the winner name");
+    }
+
+    function checkWinningProposalWithReturnValue() public view returns (bool) {
+        return ballotToTest.winningProposal() == 0;
+    }
+}
+
+
+
+Practical 12:- Create your own blockchain and demonstrate its use.
+Code:(Python)
+import hashlib
+import random
+import binascii
+import datetime
+import collections
+from Crypto.PublicKey import RSA
+from Crypto import Random
+from Crypto.Cipher import PKCS1_v1_5
+from collections import OrderedDict
+from Crypto.Hash import SHA
+from Crypto.Signature import PKCS1_v1_5
+
+
+class Client:
+    def __init__(self):
+        random_generator = Random.new().read
+        self._private_key = RSA.generate(1024, random_generator)
+        self._public_key = self._private_key.publickey()
+        self._signer = PKCS1_v1_5.new(self._private_key)
+
+    @property
+    def identity(self):
+        return binascii.hexlify(self._public_key.exportKey(format='DER')).decode('ascii')
+
+
+class Transaction:
+    def __init__(self, sender, recipient, value):
+        self.sender = sender
+        self.recipient = recipient
+        self.value = value
+        self.time = datetime.datetime.now()
+
+    def to_dict(self):
+        identity = "Genesis" if self.sender == "Genesis" else self.sender.identity
+        return OrderedDict({
+            'sender': identity,
+            'recipient': self.recipient,
+            'value': self.value,
+            'time': str(self.time)
+        })
+
+    def sign_transaction(self):
+        private_key = self.sender._private_key
+        signer = PKCS1_v1_5.new(private_key)
+        h = SHA.new(str(self.to_dict()).encode('utf8'))
+        return binascii.hexlify(signer.sign(h)).decode('ascii')
+
+
+def display_transaction(transaction):
+    tx_dict = transaction.to_dict()
+    print(f"Sender: {tx_dict['sender']}")
+    print('-----')
+    print(f"Recipient: {tx_dict['recipient']}")
+    print('-----')
+    print(f"Value: {tx_dict['value']}")
+    print('-----')
+    print(f"Time: {tx_dict['time']}")
+    print('-----')
+
+
+class Block:
+    def __init__(self):
+        self.verified_transactions = []
+        self.previous_block_hash = ""
+        self.Nonce = ""
+
+    @staticmethod
+    def sha256(message):
+        return hashlib.sha256(message.encode('ascii')).hexdigest()
+
+
+def mine(message, difficulty=1):
+    assert difficulty >= 1
+    prefix = '1' * difficulty
+    for i in range(1000000):  # Increased range for realistic mining
+        digest = Block.sha256(str(hash(message)) + str(i))
+        if digest.startswith(prefix):
+            return i  # Found nonce
+
+
+def dump_blockchain(blockchain):
+    print(f"Number of blocks in the chain: {len(blockchain)}")
+    for x in range(len(blockchain)):
+        block_temp = blockchain[x]
+        print(f"Block #{x}")
+        for transaction in block_temp.verified_transactions:
+            display_transaction(transaction)
+        print('--------------')
+        print('=====================================')
+
+
+# Creating Clients (Users)
+A = Client()
+B = Client()
+C = Client()
+
+# Creating Transactions
+t0 = Transaction("Genesis", A.identity, 500.0)
+t1 = Transaction(A, B.identity, 40.0)
+t2 = Transaction(A, C.identity, 70.0)
+t3 = Transaction(B, C.identity, 700.0)
+
+# Blockchain Initialization
+TPCoins = []
+
+# Creating Block 0
+block0 = Block()
+block0.previous_block_hash = None
+block0.Nonce = None
+block0.verified_transactions.append(t0)
+digest = Block.sha256(str(block0))  # Hash of block0
+last_block_hash = digest
+TPCoins.append(block0)
+
+# Creating Block 1
+block1 = Block()
+block1.previous_block_hash = last_block_hash
+block1.verified_transactions.append(t1)
+block1.verified_transactions.append(t2)
+block1.Nonce = mine(str(block1), 2)
+digest = Block.sha256(str(block1))
+last_block_hash = digest
+TPCoins.append(block1)
+
+# Creating Block 2
+block2 = Block()
+block2.previous_block_hash = last_block_hash
+block2.verified_transactions.append(t3)
+block2.Nonce = mine(str(block2), 2)
+digest = Block.sha256(str(block2))
+last_block_hash = digest
+TPCoins.append(block2)
+
+# Dump Blockchain Data
+dump_blockchain(TPCoins)
